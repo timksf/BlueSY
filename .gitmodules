@@ -1,3 +1,13 @@
 [submodule "map-macro"]
 	path = map-macro
 	url = https://github.com/swansontec/map-macro.git
+[submodule "examples/CImg"]
+	path = examples/libraries/CImg
+	url = https://github.com/GreycLab/CImg.git
+[submodule "examples/BlueLib"]
+	path = examples/libraries/BlueLib
+	url = https://github.com/esa-tu-darmstadt/BlueLib.git
+[submodule "examples/libraries/BlueAXI"]
+	path = examples/libraries/BlueAXI
+	url = https://github.com/timksf/BlueAXI.git
+	branch = feature/bsc-ctx-for-generic-slave

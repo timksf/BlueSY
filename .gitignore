@@ -1,2 +1,11 @@
 .vscode
 *.o
+*results/
+*_exec
+*build/
+*.ba
+*.bo
+*_sim
+*.sched
+*.so
+*sim/
