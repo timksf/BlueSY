@@ -10,7 +10,7 @@ EXE_V = $(MOD_NAME)_simv
 BUILD_DIR=build
 SIM_DIR=sim
 
-IMG_INPUT?=../test.jpg
+IMG_INPUT?=../../test.jpg
 IMG_OUTPUT?=results/result.jpg
 
 ifeq ($(IMG_INPUT),)
@@ -32,8 +32,8 @@ ARGSC ?= -D IM_PATH=\"$(IMG_INPUT)\" -D RES_PATH=\"$(IMG_OUTPUT)\"# -show-schedu
 
 $(info $(ARGSC))
 
-BLUEAXI_DIR=../libraries/BlueAXI/src
-BLUELIB_DIR=../libraries/BlueLib/src
+BLUEAXI_DIR=../../libraries/BlueAXI/src
+BLUELIB_DIR=../../libraries/BlueLib/src
 
 BLUEIMPORT=$(BLUEAXI_DIR):$(BLUELIB_DIR):+
 

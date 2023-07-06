@@ -15,6 +15,7 @@ import BDPIFunctions :: *;
 import DummyRAM :: *;
 
 typedef Bit#(32) Word;
+typedef 32 WordWidth;
 
 interface AXI4DummyRAM_ifc#(numeric type sz, numeric type dataw);
     interface AXI4_Slave_Rd_Fab#(32, dataw, 1, 0) fab_rd;
@@ -24,9 +25,9 @@ endinterface
 
 module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
     provisos(
-        Mul#(32, words_per_request, dataw), //assert that dataw is multiple of 32 (word size)
-        NumAlias#(32, wordw),
-        NumAlias#(32, addrw),
+        NumAlias#(WordWidth, wordw),
+        Mul#(WordWidth, words_per_request, dataw), //assert that dataw is multiple of 32 (word size)
+        NumAlias#(wordw, addrw),
         NumAlias#(1, id_width)
     );
 
@@ -124,8 +125,8 @@ module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
                 m_backend.write(unpack(cur_addrw) + fromInteger(i), unpack(words[i]));
             else begin
                 //write anyways
-                 m_backend.write(unpack(cur_addrw) + fromInteger(i), unpack(words[i]));
-                 //but notify
+                m_backend.write(unpack(cur_addrw) + fromInteger(i), unpack(words[i]));
+                //but notify
                 printColorTimed(RED, $format("INFO: Strobe only valid for partial word: %b (was the input amount divisible by word length?)", curr_strb));
             end
         end

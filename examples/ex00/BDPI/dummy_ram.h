@@ -5,21 +5,29 @@
 
 #include "bluesy.h"
 
+
 class DummyRAM {
 public:
+
+    using data_t = uint32_t;
+    using addr_t = uint32_t;
+
+    static constexpr uint8_t bytes_per_word = 4;
+
     DummyRAM(const uint32_t size);
     ~DummyRAM(){
         std::cout << "[DummyRAM] [DummyRAM]: " << m_write_accesses << " write accesses" << std::endl;
         std::cout << "[DummyRAM] [DummyRAM]: " << m_read_accesses << " read accesses" << std::endl;
     }
 
-    uint32_t read_word(uint32_t word_addr);
-    void write_word(uint32_t word_addr, uint32_t word);
+    data_t read_word(addr_t word_addr);
+    void write_word(addr_t word_addr, data_t word);
+
     uint32_t get_size();
 
 private:
     uint32_t m_size;
-    std::vector<uint32_t> m_data;
+    std::vector<data_t> m_data;
     uint32_t m_write_accesses;
     uint32_t m_read_accesses;
 };

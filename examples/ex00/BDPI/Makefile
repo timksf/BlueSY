@@ -7,10 +7,10 @@ override CPPFLAGS+= -O3 -std=c++17
 
 $(info $(CPPFLAGS))
 
-PRJ_ROOT=../../src
+PRJ_ROOT=../../../src
 
 LIBS=CImg
-LIB_DIRS=$(patsubst %, ../libraries/%/, $(LIBS))
+LIB_DIRS=$(patsubst %, ../../libraries/%/, $(LIBS))
 LIB_INCLUDE=$(patsubst %, -I %, $(LIB_DIRS))
 
 LINK_TO=png z X11 pthread

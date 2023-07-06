@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "dummy_ram.h"
 
 DummyRAM::DummyRAM(const uint32_t size) : m_size(size), m_write_accesses(0), m_read_accesses(0) {
@@ -7,7 +9,7 @@ DummyRAM::DummyRAM(const uint32_t size) : m_size(size), m_write_accesses(0), m_r
     }
 }
 
-uint32_t DummyRAM::read_word(uint32_t word_addr) {
+DummyRAM::data_t DummyRAM::read_word(DummyRAM::addr_t word_addr) {
     if(word_addr >= m_size) {
         std::cerr << "[DummyRAM] Tried to read word beyond bounds: " << word_addr  << "/" << (m_size-1) << std::endl;
         exit(1);
@@ -16,7 +18,7 @@ uint32_t DummyRAM::read_word(uint32_t word_addr) {
     return m_data[word_addr];
 }
 
-void DummyRAM::write_word(uint32_t word_addr, uint32_t word) {
+void DummyRAM::write_word(DummyRAM::addr_t word_addr, DummyRAM::data_t word) {
     if(word_addr >= m_size) {
         std::cerr << "[DummyRAM] Tried to write word beyond bounds: " << word_addr << "/" << (m_size-1) << std::endl;
         exit(1);
@@ -33,5 +35,5 @@ uint32_t DummyRAM::get_size() {
 
 BSV_ENABLE_PSEUDO_GC(DummyRAM)
 BSV_WRAP_CONSTRUCTOR(DummyRAM, (const uint32_t, size))
-BSV_WRAP_INSTANCE_METHOD(DummyRAM, read_word, uint32_t, (uint32_t, word_addr))
-BSV_WRAP_INSTANCE_METHOD(DummyRAM, write_word, void, (uint32_t, word_addr), (uint32_t, word))
+BSV_WRAP_INSTANCE_METHOD(DummyRAM, read_word, DummyRAM::data_t, (DummyRAM::addr_t, word_addr))
+BSV_WRAP_INSTANCE_METHOD(DummyRAM, write_word, void, (DummyRAM::addr_t, addr), (DummyRAM::data_t, word))
