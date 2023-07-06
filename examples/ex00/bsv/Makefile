@@ -80,7 +80,6 @@ clean:
 $(OBJ_FILES): %.o : %.cpp
 	$(MAKE) -C $(BDPIDIR) bsv_objs CPPFLAGS="-fPIC"
 
-
 $(EXE): $(BUILD_DIR)/$(MOD_NAME).ba $(OBJ_FILES) 
 	@mkdir -p $(SIM_DIR)
 	$(CMP) -p $(BLUEIMPORT) \

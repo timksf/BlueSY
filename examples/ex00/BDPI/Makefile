@@ -25,7 +25,5 @@ $(OBJ_FILES): %.o : %.cpp
 clean: 
 	rm -r *.o
 
-# $(CC) -c $(CPPFLAGS) $(LIB_INCLUDE) $< -o $@
-
 bsv_objs: $(OBJ_FILES)
 	@echo "Building object files for BSV"
