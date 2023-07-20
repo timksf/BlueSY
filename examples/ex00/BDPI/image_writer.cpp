@@ -11,7 +11,7 @@ bool ImageWriter::mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = 3 * width * height;
     if(sz > ram->get_size()){
-        std::cout << "[C++] Requested image would not fit in ram (" << sz << "/" << ram->get_size() << 
+        std::cout << "[ImageWriter] Requested image would not fit in ram (" << sz << "/" << ram->get_size() << 
             ")" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -19,7 +19,7 @@ bool ImageWriter::mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint
         img[i] = ram->read_word(i);
     }
     img.save(filename);
-    std::cout << "[C++] Wrote image (" << width << "x" << height << ")"
+    std::cout << "[ImageWriter] Wrote image (" << width << "x" << height << ")"
      << " to " << filename << std::endl;
     return true;
 }
@@ -29,7 +29,7 @@ bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t wid
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = width * height;
     if(start_addr + sz > ram->get_size()){
-        std::cout << "[C++] Requested image would not fit in ram at " << start_addr << " (" 
+        std::cout << "[ImageWriter] Requested image would not fit in ram at " << start_addr << " (" 
             << sz << "/" << ram->get_size() - start_addr << ")" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -43,7 +43,7 @@ bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t wid
         }
     }
     img.save(filename);
-    std::cout << "[C++] Wrote image (" << width << "x" << height << ")"
+    std::cout << "[ImageWriter] Wrote image (" << width << "x" << height << ")"
      << " to " << filename << std::endl;
     return true;
 }
@@ -53,7 +53,7 @@ bool ImageWriter::mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uin
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = width * height;
     if(start_addr + sz > ram->get_size()){
-        std::cout << "[C++] Requested image would not fit in ram at" << start_addr << " (" 
+        std::cout << "[ImageWriter] Requested image would not fit in ram at" << start_addr << " (" 
             << sz << "/" << ram->get_size() - start_addr << ")" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -61,7 +61,7 @@ bool ImageWriter::mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uin
         img[i] = ram->read_word(start_addr + i);
     }
     img.save(filename);
-    std::cout << "[C++] Wrote image (" << width << "x" << height << ")"
+    std::cout << "[ImageWriter] Wrote image (" << width << "x" << height << ")"
      << " to " << filename << std::endl;
     return true;
 }
@@ -73,7 +73,7 @@ bool ImageWriter::mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t wid
     uint32_t rem = size % 8;
     uint32_t words = size / 8 + (rem > 0 ? 1 : 0);
      if(start_addr + words > ram->get_size()){
-        std::cout << "[C++] Requested image would not fit in ram at" << start_addr << " (" 
+        std::cout << "[ImageWriter] Requested image would not fit in ram at" << start_addr << " (" 
             << words << "/" << ram->get_size() - start_addr << ")" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -90,7 +90,7 @@ bool ImageWriter::mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t wid
         img[i*8+7]  = (word & (mask << 56)) >> 56;
     }
     img.save(filename);
-    std::cout << "[C++] Wrote image (" << width << "x" << height << ")"
+    std::cout << "[ImageWriter] Wrote image (" << width << "x" << height << ")"
      << " to " << filename << std::endl;
     return true;
 }
@@ -138,7 +138,7 @@ ImageWriterStream::~ImageWriterStream(){
 
 void ImageWriterStream::check_bounds(){
     if(m_current_pixel >= m_pixels){
-        std::cerr << "[C++] Tried to write pixel beyond bounds: " << m_current_pixel + 1 << "/" << m_pixels << std::endl;
+        std::cerr << "[ImageWriter] Tried to write pixel beyond bounds: " << m_current_pixel + 1 << "/" << m_pixels << std::endl;
         exit(EXIT_FAILURE);
     }
 }

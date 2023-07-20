@@ -11,13 +11,13 @@
 using namespace cimg_library;
 
 ImageLoader::ImageLoader(const char* filename) : m_image(filename), m_current_pixel(0) {
-    std::cout << "[C++] Opened image with " << m_image.size() << " pixel values" << std::endl;
+    std::cout << "[ImageLoader] Opened image with " << m_image.size() << " pixel values" << std::endl;
 }
 
 // Use this method for stream-like access
 uint8_t ImageLoader::get_pixel() {
     if(m_current_pixel >= m_image.size()){
-        std::cout << "[C++] Reading pixel out of bounds" << std::endl;
+        std::cout << "[ImageLoader] Reading pixel out of bounds" << std::endl;
         exit(EXIT_FAILURE);
     }
     return m_image.data()[m_current_pixel++];
@@ -25,7 +25,7 @@ uint8_t ImageLoader::get_pixel() {
 
 uint8_t ImageLoader::get_pixel_at(uint32_t idx) {
     if(idx >= m_image.size()){
-        std::cout << "[C++] Reading pixel out of bounds at " << idx + 1 << "/" << m_image.size() << std::endl;
+        std::cout << "[ImageLoader] Reading pixel out of bounds at " << idx + 1 << "/" << m_image.size() << std::endl;
         exit(EXIT_FAILURE);
     }
     // std::cout << "[C++] Reading pixel at " << idx << std::endl;
@@ -35,7 +35,7 @@ uint8_t ImageLoader::get_pixel_at(uint32_t idx) {
 void ImageLoader::write_to_mem_seq(bluesy::ptr_type ram_ptr, uint64_t start_addr){
     DummyRAM* ram = (DummyRAM*) ram_ptr;
     if((ram->get_size() - start_addr) < m_image.size()){
-        std::cout << "[C++] RAM can't fit image starting from address " <<
+        std::cout << "[ImageLoader] RAM can't fit image starting from address " <<
             std::hex << start_addr << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -48,7 +48,7 @@ void ImageLoader::write_to_mem_seq(bluesy::ptr_type ram_ptr, uint64_t start_addr
 void ImageLoader::write_to_mem_interleaved(bluesy::ptr_type ram_ptr, uint64_t start_addr){
     DummyRAM* ram = (DummyRAM*) ram_ptr;
     if((ram->get_size() - start_addr) < m_image.size() / 3)
-        std::cout << "[C++] RAM can't fit image" << std::endl;
+        std::cout << "[ImageLoader] RAM can't fit image" << std::endl;
     uint32_t address = start_addr;
     int width = m_image.width();
     int height = m_image.height();
@@ -70,7 +70,7 @@ void ImageLoader::write_to_mem_gray_packed(bluesy::ptr_type ram_ptr, uint64_t st
     uint32_t words = m_image.size() / 8;
     uint32_t rem = m_image.size() % 8;
     if((ram->get_size() - start_addr) < (words + (rem > 0 ? 1 : 0)))
-        std::cerr <<  "[C++] RAM can't fit image" << std::endl;
+        std::cerr <<  "[ImageLoader] RAM can't fit image" << std::endl;
     uint64_t address = start_addr;
     for(unsigned int i = 0; i < words; i++){
         uint64_t word = 0;

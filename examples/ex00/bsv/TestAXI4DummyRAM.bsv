@@ -13,8 +13,8 @@ import BlueLib :: *;
 import BDPIFunctions :: *;
 import AXI4_DummyRAM_Slave :: *;
 
-String input_image_path = `IM_PATH;
-String output_image_path = `RES_PATH;
+String input_image_path = "../../test.jpg";//`IM_PATH;
+String output_image_path = "results/result.jpg";//`RES_PATH;
 
 typedef 1920 InputWidth;
 typedef 1080 InputHeight;

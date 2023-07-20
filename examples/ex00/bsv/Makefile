@@ -10,7 +10,7 @@ EXE_V = $(MOD_NAME)_simv
 BUILD_DIR=build
 SIM_DIR=sim
 
-IMG_INPUT?=../../test.jpg
+IMG_INPUT?=../../gray.jpg
 IMG_OUTPUT?=results/result.jpg
 
 ifeq ($(IMG_INPUT),)
