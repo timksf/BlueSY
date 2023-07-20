@@ -1,6 +1,14 @@
 package Types;
 
-typedef Bit#(32) Word;
+typedef 128 AXIDataWidth; //zynqmp PS width
+typedef 64 WordWidth;
+typedef 64 MemoryAddrWidth;
+
+typedef TDiv#(WordWidth, 8) BytesPerWord;
+typedef TDiv#(AXIDataWidth, 8) BytesPerXfer;
+
+typedef Bit#(WordWidth) Word;
+typedef Bit#(MemoryAddrWidth) MemoryAddress;
 
 typedef struct {
     Bit#(addr_width) index_min;
@@ -16,19 +24,8 @@ instance DefaultValue#(AddressRange#(addr_width));
 endinstance
 
 typedef enum {
-    RGB, //weighted sum of RGB values
-    SRGB //weighted sum of linearized sRGB values
-} ColorMode deriving(Eq, Bits);
-
-typedef enum {
-    NORMAL, //one word in memory equals one stored value
-    PACKED //the 3 8-bit values of a pixel are stored in a single word
+    NORMAL, //one word in memory equals one pixel
+    PACKED  //there are as many full pixels stored per word as possible
 } PixelLayout deriving(Eq, Bits);
-
-typedef struct {
-    UInt#(8) r;
-    UInt#(8) g;
-    UInt#(8) b;
-} RGB deriving(Eq, Bits);
 
 endpackage

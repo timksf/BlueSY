@@ -17,10 +17,10 @@ LINK_TO=png z X11 pthread
 LINK_OPTS=$(patsubst %,-l %, $(LINK_TO))
 
 test: test.cpp $(OBJ_FILES)
-	$(CC) $(LIB_INCLUDE) -I $(PRJ_ROOT) -o test_exec test.cpp *.o $(LINK_OPTS)
+	c++ $(LIB_INCLUDE) -I $(PRJ_ROOT) -o test_exec test.cpp *.o $(LINK_OPTS)
 
 $(OBJ_FILES): %.o : %.cpp
-	$(CC) -c $(CPPFLAGS) $(LIB_INCLUDE) -I $(PRJ_ROOT) -Wall $< -o $@ $(LINK_OPTS)
+	c++ -c $(CPPFLAGS) $(LIB_INCLUDE) -I $(PRJ_ROOT) -Wall $< -o $@ $(LINK_OPTS)
 
 clean: 
 	rm -r *.o

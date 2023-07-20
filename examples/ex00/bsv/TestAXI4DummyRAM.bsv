@@ -28,10 +28,10 @@ endmodule
 module mkPassthroughTest(Empty) 
     provisos(
         NumAlias#(ram_sz, 'd8_000_000),
-        NumAlias#(amount, TMul#(InputWidth, InputHeight)), //data amount in words (32bit)
+        NumAlias#(amount, TMul#(InputWidth, InputHeight)), //data amount in words
         NumAlias#(dataw, 128),
-        NumAlias#(addrw, 32),
-        NumAlias#(amount_bytes, TMul#(4, amount)),
+        NumAlias#(addrw, 64),
+        NumAlias#(amount_bytes, TMul#(8, amount)),
         NumAlias#(amountw, TLog#(amount_bytes))
     );
 
@@ -45,11 +45,11 @@ module mkPassthroughTest(Empty)
     mkConnection(dut.fab_rd, mem_master_rd.fab);
     mkConnection(dut.fab_wr, mem_master_wr.fab);
 
-    UInt#(32) write_addr = fromInteger(valueof(amount)) << 2; //byte address for AXI requests
+    UInt#(64) write_addr = fromInteger(valueof(amount)) << 3; //byte address for AXI requests
 
     //requests for memory regions
-    AxiRequest#(32, amountw) rq_rd = AxiRequest { address: 0, bytesToTransfer: fromInteger(valueof(amount_bytes)), region: 0 };
-    AxiRequest#(32, amountw) rq_wr = AxiRequest { address: pack(write_addr), bytesToTransfer: fromInteger(valueof(amount_bytes)), region: 0 };
+    AxiRequest#(addrw, amountw) rq_rd = AxiRequest { address: 0, bytesToTransfer: fromInteger(valueof(amount_bytes)), region: 0 };
+    AxiRequest#(addrw, amountw) rq_wr = AxiRequest { address: pack(write_addr), bytesToTransfer: fromInteger(valueof(amount_bytes)), region: 0 };
 
     Reg#(UInt#(64)) ram_ptr <- mkRegU;
     Reg#(UInt#(64)) image_loader_ptr <- mkRegU;
@@ -65,7 +65,7 @@ module mkPassthroughTest(Empty)
     endseq;
 
     Stmt ram_to_image_interleaved = seq
-        mem_to_file_interleaved_ImageWriter(ram_ptr, fromInteger(valueof(InputWidth)), fromInteger(valueof(InputHeight)), output_image_path, write_addr >> 2);
+        mem_to_file_interleaved_ImageWriter(ram_ptr, fromInteger(valueof(InputWidth)), fromInteger(valueof(InputHeight)), output_image_path, write_addr >> 3);
     endseq;
 
     FSM image_to_ram_fsm <- mkFSM(load_image_to_ram_interleaved);
@@ -104,6 +104,7 @@ module mkPassthroughTest(Empty)
         await(!mem_master_rd.active());
         printColorTimed(GREEN, $format("Finished reading image from RAM"));
 
+        printColorTimed(YELLOW, $format("Writing to address %x", write_addr));
         await(!mem_master_wr.active());
         printColorTimed(GREEN, $format("Finished writing image to RAM"));
         printColorTimed(YELLOW, $format("Forwarded %0d packets of width %0d totaling %0d bytes", read_cnt, valueof(dataw), (read_cnt*fromInteger(valueof(dataw))) >> 3));

@@ -17,6 +17,11 @@ void test_interleaved(ImageLoader& loader, bluesy::ptr_type ram_ptr, uint32_t w,
     auto out = ImageWriter::mem_to_file_interleaved(ram_ptr, w, h, "results/interleaved.jpg");
 }
 
+void test_gray(ImageLoader& loader, bluesy::ptr_type ram_ptr, uint32_t w, uint32_t h){
+    loader.write_to_mem_gray_packed(ram_ptr);
+    auto out = ImageWriter::mem_to_file_gray_packed(ram_ptr, w, h, "results/gray_packed.jpg");
+}
+
 int main(){
 
     uint32_t width = 1920;
@@ -24,12 +29,15 @@ int main(){
     uint32_t ram_capacity = width * height * 3.2;
 
     //work with normal C++ object for image loading
-    ImageLoader my_loader("../test.jpg");
+    ImageLoader my_loader("../../test.jpg");
     bluesy::ptr_type ram_ptr = create_DummyRAM(ram_capacity);
     DummyRAM *my_ram = reinterpret_cast<DummyRAM*>(ram_ptr);
 
     test_sequential(my_loader, ram_ptr, width, height);
     test_interleaved(my_loader, ram_ptr, width, height);
+
+    ImageLoader gray_loader("../../gray.jpg");
+    test_gray(gray_loader, ram_ptr, 640, 480);
 
     return 0;
 }

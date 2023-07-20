@@ -6,7 +6,7 @@
 #include "image_writer.h"
 #include "dummy_ram.h"
 
-bool ImageWriter::mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr){
+bool ImageWriter::mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr){
     CImg<uint8_t> img(width, height, 1, 3, 0); //create empty rgb image filled with 0s
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = 3 * width * height;
@@ -24,7 +24,7 @@ bool ImageWriter::mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint
     return true;
 }
 
-bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr){
+bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr){
     CImg<uint8_t> img(width, height, 1, 3, 0); //create empty rgb image filled with 0s
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = width * height;
@@ -35,7 +35,8 @@ bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t wid
     }
     for(uint32_t i = 0; i < height; i++){
         for(uint32_t j = 0; j < width; j++){
-            uint32_t rgb = ram->read_word(start_addr + j+(i*width));
+            uint64_t rgb = ram->read_word(start_addr + j+(i*width));
+            rgb &= 0xFFFFFFFF; //assume one rgb pixel per 64bit value in lower bits
             img(j, i, 0, 0) = (rgb >> 16) & 0xFF;
             img(j, i, 0, 1) = (rgb >> 8) & 0xFF;
             img(j, i, 0, 2) = rgb & 0xFF;
@@ -47,7 +48,7 @@ bool ImageWriter::mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t wid
     return true;
 }
 
-bool ImageWriter::mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr){
+bool ImageWriter::mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr){
     CImg<uint8_t> img(width, height, 1, 1, 0); //create empty rgb image filled with 0s
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     size_t sz = width * height;
@@ -65,23 +66,28 @@ bool ImageWriter::mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uin
     return true;
 }
 
-bool ImageWriter::mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr){
+bool ImageWriter::mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr){
     CImg<uint8_t> img(width, height, 1, 1, 0);
     DummyRAM* ram = reinterpret_cast<DummyRAM*>(ram_ptr);
     uint32_t size = width * height;
-    uint32_t rem = size % 4;
-    uint32_t words = size / 4 + (rem > 0 ? 1 : 0);
+    uint32_t rem = size % 8;
+    uint32_t words = size / 8 + (rem > 0 ? 1 : 0);
      if(start_addr + words > ram->get_size()){
         std::cout << "[C++] Requested image would not fit in ram at" << start_addr << " (" 
             << words << "/" << ram->get_size() - start_addr << ")" << std::endl;
         exit(EXIT_FAILURE);
     }
     for(unsigned int i = 0; i < words; i++){
-        uint32_t word = ram->read_word(start_addr + i);
-        img[i*4]      = word & 0x000000FF;
-        img[i*4 + 1]  = (word & 0x0000FF00) >> 8;
-        img[i*4 + 2]  = (word & 0x00FF0000) >> 16;
-        img[i*4 + 3]  = (word & 0xFF000000) >> 24;
+        uint64_t word = ram->read_word(start_addr + i);
+        uint64_t mask = 0xFF;
+        img[i*8]    = word & mask;
+        img[i*8+1]  = (word & (mask << 8)) >> 8;
+        img[i*8+2]  = (word & (mask << 16)) >> 16;
+        img[i*8+3]  = (word & (mask << 24)) >> 24;
+        img[i*8+4]  = (word & (mask << 32)) >> 32;
+        img[i*8+5]  = (word & (mask << 40)) >> 40;
+        img[i*8+6]  = (word & (mask << 48)) >> 48;
+        img[i*8+7]  = (word & (mask << 56)) >> 56;
     }
     img.save(filename);
     std::cout << "[C++] Wrote image (" << width << "x" << height << ")"
@@ -93,28 +99,28 @@ BSV_WRAP_CLASS_METHOD(
     ImageWriter, 
     mem_to_file_seq,
     bool,
-    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint32_t, start_addr) 
+    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint64_t, start_addr) 
 );
 
 BSV_WRAP_CLASS_METHOD(
     ImageWriter, 
     mem_to_file_gray,
     bool,
-    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint32_t, start_addr) 
+    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint64_t, start_addr) 
 );
 
 BSV_WRAP_CLASS_METHOD(
     ImageWriter, 
     mem_to_file_interleaved,
     bool,
-    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint32_t, start_addr) 
+    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint64_t, start_addr) 
 )
 
 BSV_WRAP_CLASS_METHOD(
     ImageWriter, 
     mem_to_file_gray_packed,
     bool,
-    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint32_t, start_addr) 
+    (bluesy::ptr_type, ram_ptr), (uint32_t, width), (uint32_t, height), (const char*, filename), (uint64_t, start_addr) 
 )
 
 

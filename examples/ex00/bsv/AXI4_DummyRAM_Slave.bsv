@@ -14,20 +14,21 @@ import BlueLib :: *;
 import BDPIFunctions :: *;
 import DummyRAM :: *;
 
-typedef Bit#(32) Word;
-typedef 32 WordWidth;
+typedef Bit#(64) Word;
+typedef 64 WordWidth;
+typedef 64 AddrWidth;
 
 interface AXI4DummyRAM_ifc#(numeric type sz, numeric type dataw);
-    interface AXI4_Slave_Rd_Fab#(32, dataw, 1, 0) fab_rd;
-    interface AXI4_Slave_Wr_Fab#(32, dataw, 1, 0) fab_wr;
+    interface AXI4_Slave_Rd_Fab#(AddrWidth, dataw, 1, 0) fab_rd;
+    interface AXI4_Slave_Wr_Fab#(AddrWidth, dataw, 1, 0) fab_wr;
     method UInt#(64) ram_instance();
 endinterface
 
 module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
     provisos(
         NumAlias#(WordWidth, wordw),
-        Mul#(WordWidth, words_per_request, dataw), //assert that dataw is multiple of 32 (word size)
-        NumAlias#(wordw, addrw),
+        Mul#(WordWidth, words_per_request, dataw), //assert that dataw is multiple of 64 (word size)
+        NumAlias#(AddrWidth, addrw),
         NumAlias#(1, id_width)
     );
 
@@ -39,7 +40,6 @@ module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
     mkAXI4_Slave_Wr#(8, 8, 8) _internal_wr(slave_wr);
 
     DummyRAMSimple_ifc m_backend <- mkDummyRAM_simple;
-    Reg#(UInt#(64)) mem_ptr <- mkRegU;
 
     Reg#(Bit#(1)) cur_id <- mkRegU;
     Reg#(UInt#(9)) transfers_left <- mkReg(0);
@@ -59,7 +59,7 @@ module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
         let rrq <- slave_rd.request.get();
         cur_id <= rrq.id;
         transfers_left <= extend(rrq.burst_length) + 1;
-        cur_addr <= rrq.addr >> 2; //convert from byte address to word address
+        cur_addr <= rrq.addr >> 3; //convert from byte address to word address
 
         UInt#(32) bytes_in_transfer = fromInteger(valueof(TDiv#(dataw, 8))) * (extend(rrq.burst_length) + 1);
         //maybe only allow burst sizes of B4, since memory model can only
@@ -98,7 +98,7 @@ module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
         UInt#(32) bytes_in_transfer = fromInteger(valueof(TDiv#(dataw, 8))) * (extend(wrq_addr.burst_length) + 1);
 
         cur_id_write <= wrq_addr.id;
-        cur_addrw <= wrq_addr.addr >> 2; //byte addr. -> word addr.
+        cur_addrw <= wrq_addr.addr >> 3; //byte addr. -> word addr.
         if(v)
             printColorTimed(YELLOW, $format("Incoming Write Request for: %h, bytes: %d", wrq_addr.addr >> 2, bytes_in_transfer));
     endrule
@@ -108,7 +108,7 @@ module mkAXI4DummyRAM#(Bool v)(AXI4DummyRAM_ifc#(sz, dataw))
         cur_addrw <= cur_addrw + fromInteger(valueof(words_per_request));
 
         let wrq_data <- slave_wr.request_data.get;
-        Vector#(words_per_request, Bit#(32)) words = unpack(wrq_data.data);
+        Vector#(words_per_request, Bit#(WordWidth)) words = unpack(wrq_data.data);
 
         // if(v) begin
         //     printColorTimed(YELLOW, $format("Handling Write Burst, left: %d", transfers_left_write));

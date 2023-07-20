@@ -22,7 +22,7 @@ module mkTestbench()
 
     Stmt load_image_to_ram_seq = seq
         action 
-            let p <- create_ImageLoader("../test.jpg");
+            let p <- create_ImageLoader("../../test.jpg");
             image_loader_ptr <= p;
         endaction
         write_to_mem_seq_ImageLoader(image_loader_ptr, ram_ptr, start_addr);
@@ -30,7 +30,7 @@ module mkTestbench()
 
     Stmt load_image_to_ram_interleaved = seq
         action 
-            let p <- create_ImageLoader("../test.jpg");
+            let p <- create_ImageLoader("../../test.jpg");
             image_loader_ptr <= p;
         endaction
         write_to_mem_interleaved_ImageLoader(image_loader_ptr, ram_ptr, start_addr);

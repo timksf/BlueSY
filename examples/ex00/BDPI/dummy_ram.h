@@ -9,15 +9,15 @@
 class DummyRAM {
 public:
 
-    using data_t = uint32_t;
-    using addr_t = uint32_t;
+    using data_t = uint64_t;
+    using addr_t = uint64_t;
 
     static constexpr uint8_t bytes_per_word = 4;
 
     DummyRAM(const uint32_t size);
     ~DummyRAM(){
-        std::cout << "[DummyRAM] [DummyRAM]: " << m_write_accesses << " write accesses" << std::endl;
-        std::cout << "[DummyRAM] [DummyRAM]: " << m_read_accesses << " read accesses" << std::endl;
+        std::cout << "[DummyRAM]: " << m_write_accesses << " write accesses" << std::endl;
+        std::cout << "[DummyRAM]: " << m_read_accesses << " read accesses" << std::endl;
     }
 
     data_t read_word(addr_t word_addr);

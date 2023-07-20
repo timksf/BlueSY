@@ -11,13 +11,13 @@ using namespace cimg_library;
 class ImageWriter {
 public:
 
-    static bool mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr = 0x0);
+    static bool mem_to_file_seq(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr = 0x0);
 
-    static bool mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr = 0x0);
+    static bool mem_to_file_gray(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr = 0x0);
 
-    static bool mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr = 0x0);
+    static bool mem_to_file_interleaved(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr = 0x0);
 
-    static bool mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint32_t start_addr = 0x0);
+    static bool mem_to_file_gray_packed(bluesy::ptr_type ram_ptr, uint32_t width, uint32_t height, const char* filename, uint64_t start_addr = 0x0);
 
 };
 
