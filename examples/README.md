@@ -8,3 +8,7 @@ The former reads a RGB image into the dummy RAM and then uses an AXI adapter to 
 
 The latter reads a grayscale image into the dummy RAM, configures the filter and then runs the filter. When the filter has finished (it inverts the image), a function imported from C++ will read the result from the RAM
 model and write it to an output file.
+
+# ex01
+This example is rather small but shows that one can easily do more "exotic" stuff in BSV. 
+To build just got to `ex01/bsv` and run `make sim`. This will display an image from within a bluesim simulation.
