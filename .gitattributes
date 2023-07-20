@@ -1,2 +1,5 @@
-examples/ex00/bsv linguist-detectable
-examples/ex01/bsv linguist-detectable
+map-macro/** linguist-vendored
+exmaples/libraries/** linguist-vendored
+
+examples/ex00/bsv/* linguist-detectable
+examples/ex01/bsv/* linguist-detectable
